@@ -1,0 +1,56 @@
+<template>
+    <div class="container">
+        <div class="board" ref="boardEl">
+            <Node v-for="item in nodes" :msg="item.content"/>
+
+            <!-- 辅助线 -->
+            <!-- 连接线 -->
+             <Line :startNode="0" :endNode="0"/>
+        </div>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import { onMounted, ref} from 'vue';
+import { dragable, zoomable } from '../utils/move';
+import Node from '../components/node.vue'
+const boardEl = ref(null)
+const nodes = [
+    {
+        id: 1,
+        type: '',
+        content: 'node1'
+    },
+    {
+        id: 2,
+        type: '',
+        content: 'node2'
+    },
+    {
+        id: 3,
+        content: 'node3'
+    },
+]
+
+onMounted(function() {
+    // dragable(boardEl.value!)
+    zoomable(boardEl.value!)
+})
+</script>
+
+<style lang="stylus" scoped>
+.container{
+    background #ddd
+    height 100%
+    position relative
+    overflow hidden
+}
+.board{
+    position absolute
+    width: 100%
+    height 100%
+    background-color #fff
+    background-size: 40px 40px;
+    background-image: radial-gradient(circle, #999 1px, rgba(0, 0, 0, 0) 1px);
+}
+</style>
