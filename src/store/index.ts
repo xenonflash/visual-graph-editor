@@ -46,12 +46,13 @@ export const useStore = defineStore('store', {
             }
             this.lines = this.lines.filter(({ id }) => id !== lineId)
         },
-        updateLine(lineId: string, c: string) {
-            const line = this.lines.find(({id}) => id === lineId)
+        updateLine(lineId: string, params = {}) {
+            const line = this.lines.find(({ id }) => id === lineId)
             if (!line) {
                 console.warn(`no that line: ${lineId}`)
+                return
             }
-            line.c = c
+            Object.assign(line, params)
         },
         setActiveLineId(id: string) {
             this.activeLineId = id

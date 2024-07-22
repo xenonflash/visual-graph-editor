@@ -7,7 +7,9 @@ const props = defineProps<{ fromX: number, fromY: number, toX: number, toY: numb
 const d = computed(function() {
     const x = props.fromX - 15
     const y = props.fromY - 75
-    return `M${x} ${y}, L300 300`
+    const toX = props.toX - 15
+    const toY = props.toY - 75
+    return `M${x} ${y}, L${toX} ${toY}`
 })
 
 </script>

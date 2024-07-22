@@ -26,7 +26,7 @@ function setActive(id: string) {
 function handleMousedown(e: MouseEvent, dir: string) {
     const el = e!.currentTarget as HTMLElement
     if (!el) return
-// 画线
+    // 画线
     const { x: dotX, y: dotY } = el.getBoundingClientRect()
     const { clientX, clientY } = e
 
@@ -38,21 +38,28 @@ function handleMousedown(e: MouseEvent, dir: string) {
         fromNode: id.value,
         toNode: '',
         fromDot: dir,
-        toDot:0,
+        toDot: '',
         fromX: dotX + 5, // 球的半径
         fromY: dotY + 5,
         toX: 0,
-        toY: 0
+        toY: 0,
+        temp: true
     }
+    // 添加一个临时线
+    store.addLine(tempLine)
 
     // 添加一个edge
     function _onMove(e: MouseEvent) {
+
         console.log(e.clientX, e.clientY)
+        store.updateLine(tempLine.id, {
+            toX: e.clientX,
+            toY: e.clientY
+        })
     }
     // 跟随鼠标位置，更新C曲线指令
     document.addEventListener('mousemove', _onMove)
     document.addEventListener('mouseup', function _onUp() {
-        store.addLine(tempLine)
         document.removeEventListener('mousemove', _onMove)
         document.removeEventListener('mouseup', _onUp)
     })
