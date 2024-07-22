@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="board" ref="boardEl">
-            <Node v-for="item in nodes" :msg="item.content" :id="item.id" />
+            <Node v-for="item in nodes" :data="item"/>
 
             <!-- 辅助线 -->
             <!-- 连接线 -->
@@ -21,7 +21,6 @@ import Line from '../components/line.vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
 const { nodes, lines} = storeToRefs(useStore())
-console.log(nodes.value)
 
 const boardEl = ref(null)
 

@@ -32,8 +32,8 @@ export const useStore = defineStore('store', {
             const newNode: INode = {
                 id,
                 content: `node ${id}`,
-                x: 0,
-                y: 0,
+                x: ~~Math.random() * 200 + 100,
+                y: ~~Math.random() * 200 + 100,
                 width: 100,
                 height: 100
             }
@@ -59,7 +59,6 @@ export const useStore = defineStore('store', {
                         fromX: x + offset.left,
                         fromY: y + offset.top
                     })
-                    console.log('---------', x, y, offset)
                 }
                 
             })

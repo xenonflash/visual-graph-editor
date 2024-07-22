@@ -10,7 +10,6 @@ import Node from '../components/node.vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
 const { nodes } = storeToRefs(useStore())
-console.log(nodes.value)
 
 
 onMounted(function () {

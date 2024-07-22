@@ -25,19 +25,18 @@ const { activeNodeId, nodes } = storeToRefs(store)
 
 const nodeEl = ref()
 
-const props = defineProps<{ msg: string, id: string }>()
-const { id } = toRefs(props)
+const props = defineProps<{ data: INode }>()
+const { data } = toRefs(props)
 
-const isActive = computed(() => activeNodeId.value === id.value)
+const isActive = computed(() => activeNodeId.value === data.value.id)
 
 onMounted(() => {
     dragable(nodeEl.value!, false, false, updateOnMove)
 })
 
 function handlePos(dir) {
-    const node = nodes.value.find(({ id: _id }) => _id === id.value)
+    const node = nodes.value.find(({ id: _id }) => _id === data.value.id)
     const { top, left } = getHandlePos(node.width, node.height, dir)
-    console.log(dir, top, left)
     return {
         top,
         left
@@ -46,7 +45,7 @@ function handlePos(dir) {
 
 function updateOnMove(e: MouseEvent, x: number, y: number) {
     // 更新线
-    store.updateNodePos(id.value, x + 15, y + 80) //TODO: 全局管理画布offset
+    store.updateNodePos(data.value.id, x + 20, y + 82) //TODO: 全局管理画布offset
 }
 
 function setActive(id: string) {
@@ -62,7 +61,7 @@ function handleMousedown(e: MouseEvent, dir: string) {
     // 确定鼠标相对画布的开始点
     const tempLine: ILine = {
         id: nanoid(10),
-        fromNode: id.value,
+        fromNode: data.value.id,
         toNode: '',
         fromDot: dir,
         toDot: '',
@@ -94,9 +93,13 @@ function handleMousedown(e: MouseEvent, dir: string) {
 </script>
 
 <template>
-    <div class="node-container" ref="nodeEl" :class="{ 'is-active': isActive }" @mousedown="setActive(id)">
-        {{ msg }}
-
+    <div
+        class="node-container"
+        ref="nodeEl"
+        :class="{ 'is-active': isActive }"
+        @mousedown="setActive(data.id)"
+    >
+        {{ data.content }}
         <template v-if="isActive">
             <div :style="{ top: handlePos('l').top + 'px', left: handlePos('l').left + 'px' }" class="dot left"
                 @mousedown="handleMousedown($event, 'l')"></div>
