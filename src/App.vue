@@ -1,35 +1,53 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import Board from './components/board.vue'
+import PropsPanel from './components/props-panel.vue'
 import { useStore } from './store'
-
-const { addNode, removeNode, activeNodeId} = useStore()
+const store = useStore()
+const { addNode, removeNode } = store
+const { activeNodeId } = storeToRefs(store)
 
 function handleAddNode() {
   console.log('add')
   addNode()
 }
-function handleRemoveNode(nodeId: string) {
-  removeNode(nodeId)
+function handleRemoveNode() {
+  removeNode(activeNodeId.value)
 }
 </script>
 
 <template>
+  <!-- 顶部栏 -->
   <div class="navbar">
     <button @click="handleAddNode">添加</button>
     <button :disabled="activeNodeId.length < 1" @click="handleRemoveNode">删除</button>
   </div>
-  <Board />
+  <section>
+
+    <!-- 中间画板 -->
+    <Board />
+
+    <!-- 右侧 -->
+    <PropsPanel />
+  </section>
+
 </template>
 
 <style scoped lang="stylus">
 .navbar{
   border-bottom 1px solid #ccc
-  height 60px
   display flex
   align-items center
+  height: 60px
+  border-bottom: 15px solid #eee
   button {
     margin: 0 10px
     padding: 0 7px
   }
+}
+section{
+  display flex
+  height 100%
+  flex-shrink: 0
 }
 </style>

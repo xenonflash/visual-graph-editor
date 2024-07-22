@@ -29,11 +29,12 @@ onMounted(function () {
 
 <style lang="stylus" scoped>
 .container{
+    display flex
+    flex 1
     background #ddd
     height 100%
     position relative
     overflow hidden
-    padding 20px
 }
 .board{
     position absolute

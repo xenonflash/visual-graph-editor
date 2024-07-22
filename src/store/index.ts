@@ -16,13 +16,14 @@ export const useStore = defineStore('store', {
         },
         addNode() {
             console.log('addnode')
+            const id = nanoid(10)
             const newNode = {
-                id: nanoid(),
-                content: `node ${this.nodes.length + 1}`
+                id,
+                content: `node ${id}`
             }
             this.nodes.push(newNode as never)
             console.log(this.nodes)
-            this.setActiveNodeId(newNode.id)
+            this.setActiveNodeId(id)
         },
         removeNode(nodeId: string) {
             if (nodeId === this.activeNodeId) {
