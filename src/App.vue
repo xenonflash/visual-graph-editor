@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import Board from './components/board.vue'
 import PropsPanel from './components/props-panel.vue'
+import LeftPanel from './components/left-panel.vue'
 import { useStore } from './store'
 const store = useStore()
 const { addNode, removeNode } = store
@@ -23,6 +24,8 @@ function handleRemoveNode() {
     <button :disabled="activeNodeId.length < 1" @click="handleRemoveNode">删除</button>
   </div>
   <section>
+    <!-- 左侧 -->
+    <LeftPanel />
 
     <!-- 中间画板 -->
     <Board />

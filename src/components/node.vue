@@ -65,7 +65,7 @@ function handleMousedown(e: MouseEvent, dir: string) {
         toNode: '',
         fromDot: dir,
         toDot: '',
-        fromX: dotX + 5, // 球的半径
+        fromX: dotX + 5 - 200, // 球的半径
         fromY: dotY + 5,
         toX: -1,
         toY: -1,
@@ -78,7 +78,7 @@ function handleMousedown(e: MouseEvent, dir: string) {
     function _onMove(e: MouseEvent) {
 
         store.updateLine(tempLine.id, {
-            toX: e.clientX,
+            toX: e.clientX - 200,
             toY: e.clientY
         })
     }
