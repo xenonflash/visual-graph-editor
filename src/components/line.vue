@@ -1,19 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-export interface ILine{
-    id: string,
-    fromNode: string,
-    toNode: string,
-    fromDot: 'l' | 't' | 'b' | 'r',
-    toDot: string,
-    fromX: number, // 球的半径
-    fromY: number,
-    toX: number,
-    toY: number,
-    temp: boolean
-}
-
 
 
 const props = defineProps<{ fromX: number, fromY: number, toX: number, toY: number }>()

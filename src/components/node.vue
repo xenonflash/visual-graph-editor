@@ -4,30 +4,11 @@ import { dragable } from '../utils/move'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
 import { nanoid } from 'nanoid';
-import { ILine } from './line.vue';
-import getHandlePos from '../utils/getHandlePos';
-
-export interface INode {
-    id: string,
-    content: string,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    dots: IDot[]
-}
-
-export interface IDot {
-    radius: number,
-    left: number,
-    top: number,
-    dir: 'l' | 'r' | 'b' | 't'
-}
-
+import { IDot, ILine, INode } from '../typings';
 
 
 const store = useStore()
-const { activeNodeId, nodes } = storeToRefs(store)
+const { activeNodeId, mouseOnDot } = storeToRefs(store)
 
 
 const nodeEl = ref()
@@ -84,7 +65,16 @@ function handleMousedown(e: MouseEvent, dir: string) {
 
     document.addEventListener('mouseup', function _onUp() {
         //如果鼠标有当前落在的dot上，就连线
-
+        if (mouseOnDot?.value) {
+            store.updateLine(tempLine.id, {
+                toDot: mouseOnDot?.value?.dir,
+                toX: '',
+                toY: '',
+                toNode: ''
+            })
+        } else {
+            store.removeLine(tempLine.id)
+        }
         // 否则删掉刚才的线
         document.removeEventListener('mousemove', _onMove)
         document.removeEventListener('mouseup', _onUp)
@@ -93,16 +83,26 @@ function handleMousedown(e: MouseEvent, dir: string) {
 
 
 function handleDotEnter(dot: IDot) {
+    console.log('enter', dot)
     store.setMouseOnDot(dot)
 }
 function handleDotLeave() {
+    console.log('leave')
     store.setMouseOnDot(null)
+}
+function handleNodeEnter(node: INode) {
+    store.setMouseOnNode(node)
+}
+function handleNodeLeave() {
+    store.setMouseOnNode(null)
+
 }
 
 </script>
 
 <template>
-    <div class="node-container" ref="nodeEl" :class="{ 'is-active': isActive }" @mousedown="setActive(data.id)">
+    <div class="node-container" ref="nodeEl" :class="{ 'is-active': isActive }" @mousedown="setActive(data.id)"
+        @mouseenter="handleNodeEnter(data)" @mouseleave="handleNodeLeave()">
         {{ data.content }}
         <template v-if="isActive">
             <div v-for="dot in data.dots" :style="{ top: dot.top + 'px', left: dot.left + 'px' }" class="dot left"

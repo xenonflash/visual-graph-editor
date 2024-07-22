@@ -1,8 +1,9 @@
 import { nanoid } from "nanoid"
 import { defineStore, Store } from "pinia"
-import { IDot, INode } from "../components/node.vue"
-import { ILine } from "../components/line.vue"
+import { IDot, INode } from "../typings"
+import { ILine } from "../typings"
 import getHandlePos from "../utils/getHandlePos"
+import { NodeStatus } from "../typings/index"
 
 type StoreData = {
     scale: number,
@@ -11,6 +12,7 @@ type StoreData = {
     activeNodeId: string,
     activeLineId: string,
     mouseOnDot?: IDot | null
+    mouseOnNode?: INode | null
 }
 
 export const useStore = defineStore('store', {
@@ -37,30 +39,31 @@ export const useStore = defineStore('store', {
                 y: ~~Math.random() * 200 + 100,
                 width: 100,
                 height: 100,
+                status: NodeStatus.normal,
                 dots: [
                     {
                         dir: 'l',
                         radius: 10,
-                        left: 0 - 5,
-                        top: 50 - 5
+                        left: 0 - 6,
+                        top: 50 - 6
                     },
                     {
                         dir: 'r',
                         radius: 10,
-                        left: 100 - 5,
-                        top: 50 - 5
+                        left: 100 - 8,
+                        top: 50 - 8
                     },
                     {
                         dir: 't',
                         radius: 10,
-                        left: 50 - 5,
-                        top: 0 - 5
+                        left: 50 - 6,
+                        top: 0 - 6
                     },
                     {
                         dir: 'b',
                         radius: 10,
-                        left: 50 - 5,
-                        top: 100 - 5
+                        left: 50 - 8,
+                        top: 100 - 8
                     }
                 ]
             }
@@ -109,7 +112,7 @@ export const useStore = defineStore('store', {
             }
             this.lines = this.lines.filter(({ id }) => id !== lineId)
         },
-        updateLine(lineId: string, params = {}) {
+        updateLine(lineId: string, params: Partial<ILine> = {}) {
             const line = this.lines.find(({ id }) => id === lineId)
             if (!line) {
                 console.warn(`no that line: ${lineId}`)
@@ -122,6 +125,9 @@ export const useStore = defineStore('store', {
         },
         setMouseOnDot(dot: IDot| null) {
             this.mouseOnDot = dot
+        },
+        setMouseOnNode(dot: INode| null) {
+            this.mouseOnNode = dot
         }
     },
 
