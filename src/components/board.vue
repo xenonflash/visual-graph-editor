@@ -1,14 +1,19 @@
 <template>
     <div class="container">
         <div class="board" ref="boardEl">
-            <Node v-for="item in nodes" :data="item"/>
+            <Node v-for="item in nodes" :data="item" />
 
             <!-- 辅助线 -->
             <!-- 连接线 -->
-             <svg width="100%" height="100%">
-                <Line v-for="line in lines" :fromX="line.fromX" :fromY="line.fromY" :toX="line.toX" :toY="line.toY"/>
-             </svg>
-            
+            <svg width="100%" height="100%">
+                <defs>
+                    <marker id='head' orient="auto" markerWidth='3' markerHeight='4' refX='0.1' refY='2'>
+                        <path d='M0,0 V4 L2,2 Z' fill="lightblue" />
+                    </marker>
+                </defs>
+                <Line v-for="line in lines" :fromX="line.fromX" :fromY="line.fromY" :toX="line.toX" :toY="line.toY" />
+            </svg>
+
         </div>
     </div>
 </template>
@@ -20,7 +25,7 @@ import Node from '../components/node.vue'
 import Line from '../components/line.vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
-const { nodes, lines} = storeToRefs(useStore())
+const { nodes, lines } = storeToRefs(useStore())
 
 const boardEl = ref(null)
 

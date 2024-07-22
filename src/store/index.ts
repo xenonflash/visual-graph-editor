@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid"
 import { defineStore, Store } from "pinia"
-import { INode } from "../components/node.vue"
+import { IDot, INode } from "../components/node.vue"
 import { ILine } from "../components/line.vue"
 import getHandlePos from "../utils/getHandlePos"
 
@@ -9,7 +9,8 @@ type StoreData = {
     nodes: INode[],
     lines: ILine[],
     activeNodeId: string,
-    activeLineId: string
+    activeLineId: string,
+    mouseOnDot?: IDot | null
 }
 
 export const useStore = defineStore('store', {
@@ -35,7 +36,33 @@ export const useStore = defineStore('store', {
                 x: ~~Math.random() * 200 + 100,
                 y: ~~Math.random() * 200 + 100,
                 width: 100,
-                height: 100
+                height: 100,
+                dots: [
+                    {
+                        dir: 'l',
+                        radius: 10,
+                        left: 0 - 5,
+                        top: 50 - 5
+                    },
+                    {
+                        dir: 'r',
+                        radius: 10,
+                        left: 100 - 5,
+                        top: 50 - 5
+                    },
+                    {
+                        dir: 't',
+                        radius: 10,
+                        left: 50 - 5,
+                        top: 0 - 5
+                    },
+                    {
+                        dir: 'b',
+                        radius: 10,
+                        left: 50 - 5,
+                        top: 100 - 5
+                    }
+                ]
             }
             this.nodes.push(newNode as never)
             this.setActiveNodeId(id)
@@ -60,7 +87,7 @@ export const useStore = defineStore('store', {
                         fromY: y + offset.top
                     })
                 }
-                
+
             })
         },
         removeNode(nodeId: string) {
@@ -93,5 +120,9 @@ export const useStore = defineStore('store', {
         setActiveLineId(id: string) {
             this.activeLineId = id
         },
+        setMouseOnDot(dot: IDot| null) {
+            this.mouseOnDot = dot
+        }
     },
+
 })

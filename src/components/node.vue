@@ -13,9 +13,16 @@ export interface INode {
     x: number,
     y: number,
     width: number,
-    height: number
+    height: number,
+    dots: IDot[]
 }
 
+export interface IDot {
+    radius: number,
+    left: number,
+    top: number,
+    dir: 'l' | 'r' | 'b' | 't'
+}
 
 
 
@@ -33,15 +40,6 @@ const isActive = computed(() => activeNodeId.value === data.value.id)
 onMounted(() => {
     dragable(nodeEl.value!, false, false, updateOnMove)
 })
-
-function handlePos(dir) {
-    const node = nodes.value.find(({ id: _id }) => _id === data.value.id)
-    const { top, left } = getHandlePos(node.width, node.height, dir)
-    return {
-        top,
-        left
-    }
-}
 
 function updateOnMove(e: MouseEvent, x: number, y: number) {
     // 更新线
@@ -76,7 +74,6 @@ function handleMousedown(e: MouseEvent, dir: string) {
 
     // 添加一个edge
     function _onMove(e: MouseEvent) {
-
         store.updateLine(tempLine.id, {
             toX: e.clientX - 200,
             toY: e.clientY
@@ -84,31 +81,33 @@ function handleMousedown(e: MouseEvent, dir: string) {
     }
     // 跟随鼠标位置，更新C曲线指令
     document.addEventListener('mousemove', _onMove)
+
     document.addEventListener('mouseup', function _onUp() {
+        //如果鼠标有当前落在的dot上，就连线
+
+        // 否则删掉刚才的线
         document.removeEventListener('mousemove', _onMove)
         document.removeEventListener('mouseup', _onUp)
     })
 }
 
+
+function handleDotEnter(dot: IDot) {
+    store.setMouseOnDot(dot)
+}
+function handleDotLeave() {
+    store.setMouseOnDot(null)
+}
+
 </script>
 
 <template>
-    <div
-        class="node-container"
-        ref="nodeEl"
-        :class="{ 'is-active': isActive }"
-        @mousedown="setActive(data.id)"
-    >
+    <div class="node-container" ref="nodeEl" :class="{ 'is-active': isActive }" @mousedown="setActive(data.id)">
         {{ data.content }}
         <template v-if="isActive">
-            <div :style="{ top: handlePos('l').top + 'px', left: handlePos('l').left + 'px' }" class="dot left"
-                @mousedown="handleMousedown($event, 'l')"></div>
-            <div :style="{ top: handlePos('r').top + 'px', left: handlePos('r').left + 'px' }" class="dot right"
-                @mousedown="handleMousedown($event, 'r')"></div>
-            <div :style="{ top: handlePos('t').top + 'px', left: handlePos('t').left + 'px' }" class="dot top"
-                @mousedown="handleMousedown($event, 't')"></div>
-            <div :style="{ top: handlePos('b').top + 'px', left: handlePos('b').left + 'px' }" class="dot bottom"
-                @mousedown="handleMousedown($event, 'b')"></div>
+            <div v-for="dot in data.dots" :style="{ top: dot.top + 'px', left: dot.left + 'px' }" class="dot left"
+                @mousedown="handleMousedown($event, dot.dir)" @mouseenter="handleDotEnter(dot)"
+                @mouseleave="handleDotLeave()"></div>
         </template>
         <!-- <div class="handles" v-if="isActive" @mousedown="handleMousedown($event)"></div> -->
     </div>
