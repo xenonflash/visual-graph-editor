@@ -46,7 +46,7 @@ function handlePos(dir) {
 
 function updateOnMove(e: MouseEvent, x: number, y: number) {
     // 更新线
-    store.updateNodePos(id.value, x, y)
+    store.updateNodePos(id.value, x + 15, y + 80) //TODO: 全局管理画布offset
 }
 
 function setActive(id: string) {

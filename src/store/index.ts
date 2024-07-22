@@ -2,6 +2,7 @@ import { nanoid } from "nanoid"
 import { defineStore, Store } from "pinia"
 import { INode } from "../components/node.vue"
 import { ILine } from "../components/line.vue"
+import getHandlePos from "../utils/getHandlePos"
 
 type StoreData = {
     scale: number,
@@ -48,10 +49,19 @@ export const useStore = defineStore('store', {
             Object.assign(node, { x, y })
             // 如果位置大小变化了。需要更新所有相关的线
             this.lines.forEach(line => {
+                const dir = line.fromDot
+
                 if (line.toNode === nodeId) {
                 }
                 if (line.fromNode === nodeId) {
+                    const offset = getHandlePos(node.width, node.height, dir)
+                    Object.assign(line, {
+                        fromX: x + offset.left,
+                        fromY: y + offset.top
+                    })
+                    console.log('---------', x, y, offset)
                 }
+                
             })
         },
         removeNode(nodeId: string) {

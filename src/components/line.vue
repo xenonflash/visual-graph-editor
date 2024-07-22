@@ -5,7 +5,7 @@ export interface ILine{
     id: string,
     fromNode: string,
     toNode: string,
-    fromDot: string,
+    fromDot: 'l' | 't' | 'b' | 'r',
     toDot: string,
     fromX: number, // 球的半径
     fromY: number,
