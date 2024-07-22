@@ -1,40 +1,29 @@
 <template>
     <div class="container">
         <div class="board" ref="boardEl">
-            <Node v-for="item in nodes" :msg="item.content"/>
+            <Node v-for="item in nodes" :msg="item.content" :id="item.id" />
 
             <!-- 辅助线 -->
             <!-- 连接线 -->
-             <Line :startNode="0" :endNode="0"/>
+            <!-- <Line :startNode="0" :endNode="0"/> -->
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref} from 'vue';
+import { onMounted, ref } from 'vue';
 import { dragable, zoomable } from '../utils/move';
 import Node from '../components/node.vue'
-const boardEl = ref(null)
-const nodes = [
-    {
-        id: 1,
-        type: '',
-        content: 'node1'
-    },
-    {
-        id: 2,
-        type: '',
-        content: 'node2'
-    },
-    {
-        id: 3,
-        content: 'node3'
-    },
-]
+import { useStore } from '../store'
+import { storeToRefs } from 'pinia';
+const { nodes } = storeToRefs(useStore())
+console.log(nodes.value)
 
-onMounted(function() {
+const boardEl = ref(null)
+
+onMounted(function () {
     // dragable(boardEl.value!)
-    zoomable(boardEl.value!)
+    // zoomable(boardEl.value!)
 })
 </script>
 
@@ -44,6 +33,7 @@ onMounted(function() {
     height 100%
     position relative
     overflow hidden
+    padding 20px
 }
 .board{
     position absolute

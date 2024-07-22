@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import Board from './components/board.vue'
+import { useStore } from './store'
 
-function handleAddNode() {}
-function handleRemoveNode() {}
+const { addNode, removeNode, activeNodeId} = useStore()
+
+function handleAddNode() {
+  console.log('add')
+  addNode()
+}
+function handleRemoveNode(nodeId: string) {
+  removeNode(nodeId)
+}
 </script>
 
 <template>
   <div class="navbar">
-    <button @onclick="handleAddNode">添加</button>
-    <button @onclick="handleRemoveNode">删除</button>
+    <button @click="handleAddNode">添加</button>
+    <button :disabled="activeNodeId.length < 1" @click="handleRemoveNode">删除</button>
   </div>
-  <Board/>
+  <Board />
 </template>
 
 <style scoped lang="stylus">
