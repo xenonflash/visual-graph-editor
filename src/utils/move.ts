@@ -7,6 +7,8 @@ export function dragable(el: HTMLElement, lockX = false, lockY = false) {
         !lockY && (el.style.top = (oy + dy) + 'px')
     }
     function _onDown(e: MouseEvent) {
+        console.log(e.target, el)
+        if (e.target !== el) return
         seedX = e.x
         seedY = e.y
         ox = parseInt(getComputedStyle(el).left)

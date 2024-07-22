@@ -6,7 +6,8 @@ export const useStore = defineStore('store', {
         scale: 1,
         nodes: [],
         lines: [],
-        activeNodeId: ''
+        activeNodeId: '',
+        activeLineId: ''
     }),
     getters: {
         // double: (state) => state.count * 2,
@@ -34,6 +35,26 @@ export const useStore = defineStore('store', {
         },
         setActiveNodeId(id: string) {
             this.activeNodeId = id
-        }
+        },
+        addLine(newLine: any) {
+            this.lines.push(newLine as never)
+            this.setActiveLineId(newLine!.id)
+        },
+        removeLine(lineId: string) {
+            if (lineId === this.activeLineId) {
+                this.activeLineId = ''
+            }
+            this.lines = this.lines.filter(({ id }) => id !== lineId)
+        },
+        updateLine(lineId: string, c: string) {
+            const line = this.lines.find(({id}) => id === lineId)
+            if (!line) {
+                console.warn(`no that line: ${lineId}`)
+            }
+            line.c = c
+        },
+        setActiveLineId(id: string) {
+            this.activeLineId = id
+        },
     },
 })

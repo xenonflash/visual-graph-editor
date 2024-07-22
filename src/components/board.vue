@@ -5,7 +5,10 @@
 
             <!-- 辅助线 -->
             <!-- 连接线 -->
-            <!-- <Line :startNode="0" :endNode="0"/> -->
+             <svg width="100%" height="100%">
+                <Line v-for="line in lines" :fromX="line.fromX" :fromY="line.fromY" :toX="line.toX" :toY="line.toY"/>
+             </svg>
+            
         </div>
     </div>
 </template>
@@ -14,9 +17,10 @@
 import { onMounted, ref } from 'vue';
 import { dragable, zoomable } from '../utils/move';
 import Node from '../components/node.vue'
+import Line from '../components/line.vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
-const { nodes } = storeToRefs(useStore())
+const { nodes, lines} = storeToRefs(useStore())
 console.log(nodes.value)
 
 const boardEl = ref(null)
