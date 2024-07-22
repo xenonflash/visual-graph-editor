@@ -8,7 +8,7 @@ import { IDot, ILine, INode } from '../typings';
 
 
 const store = useStore()
-const { activeNodeId, mouseOnDot } = storeToRefs(store)
+const { activeNodeId, hoverNodeId, hoverNode, hoverDot } = storeToRefs(store)
 
 
 const nodeEl = ref()
@@ -16,7 +16,12 @@ const nodeEl = ref()
 const props = defineProps<{ data: INode }>()
 const { data } = toRefs(props)
 
-const isActive = computed(() => activeNodeId.value === data.value.id)
+const isActive = computed(() => {
+    return activeNodeId.value === data.value.id
+})
+const isHover = computed(() => {
+    return hoverNodeId?.value === data.value.id
+})
 
 onMounted(() => {
     dragable(nodeEl.value!, false, false, updateOnMove)
@@ -65,12 +70,14 @@ function handleMousedown(e: MouseEvent, dir: string) {
 
     document.addEventListener('mouseup', function _onUp() {
         //如果鼠标有当前落在的dot上，就连线
-        if (mouseOnDot?.value) {
+        const toDot = hoverDot?.value
+        const toNode = hoverNode.value
+        if (toDot) {
             store.updateLine(tempLine.id, {
-                toDot: mouseOnDot?.value?.dir,
-                toX: '',
-                toY: '',
-                toNode: ''
+                toDot: toDot.dir,
+                toX: toNode.x + toDot.left,
+                toY: toNode.y + toDot.top,
+                toNode: hoverNode.value.id
             })
         } else {
             store.removeLine(tempLine.id)
@@ -90,21 +97,20 @@ function handleDotLeave() {
     console.log('leave')
     store.setMouseOnDot(null)
 }
-function handleNodeEnter(node: INode) {
-    store.setMouseOnNode(node)
+function handleNodeEnter(nodeId: string) {
+    store.setMouseOnNode(nodeId)
 }
 function handleNodeLeave() {
-    store.setMouseOnNode(null)
-
+    store.setMouseOnNode(undefined)
 }
 
 </script>
 
 <template>
-    <div class="node-container" ref="nodeEl" :class="{ 'is-active': isActive }" @mousedown="setActive(data.id)"
-        @mouseenter="handleNodeEnter(data)" @mouseleave="handleNodeLeave()">
+    <div class="node-container" ref="nodeEl" :class="{ 'is-active': isActive, 'is-hover': isHover }"
+        @mousedown="setActive(data.id)" @mouseenter="handleNodeEnter(data.id)" @mouseleave="handleNodeLeave()">
         {{ data.content }}
-        <template v-if="isActive">
+        <template v-if="isActive || isHover">
             <div v-for="dot in data.dots" :style="{ top: dot.top + 'px', left: dot.left + 'px' }" class="dot left"
                 @mousedown="handleMousedown($event, dot.dir)" @mouseenter="handleDotEnter(dot)"
                 @mouseleave="handleDotLeave()"></div>
@@ -130,6 +136,9 @@ function handleNodeLeave() {
     }
     .is-active{
         border-color blue
+    }
+    .is-hover{
+        border-color pink
     }
     // .handles{
     //     position: absolute

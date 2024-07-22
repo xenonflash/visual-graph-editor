@@ -11,8 +11,8 @@ type StoreData = {
     lines: ILine[],
     activeNodeId: string,
     activeLineId: string,
-    mouseOnDot?: IDot | null
-    mouseOnNode?: INode | null
+    hoverDot: IDot | null
+    hoverNodeId: string | undefined
 }
 
 export const useStore = defineStore('store', {
@@ -21,10 +21,14 @@ export const useStore = defineStore('store', {
         nodes: [],
         lines: [],
         activeNodeId: '',
-        activeLineId: ''
+        activeLineId: '',
+        hoverNodeId: '',
+        hoverDot: null
     }),
     getters: {
-        // double: (state) => state.count * 2,
+        activeNode: (state) => state.nodes.find(({id}) => id === state.activeNodeId),
+        activeLine: (state) => state.lines.find(({id}) => id === state.activeLineId),
+        hoverNode: (state) => state.nodes.find(({id}) => id === state.hoverNodeId),
     },
     actions: {
         setScale(val: number) {
@@ -71,7 +75,7 @@ export const useStore = defineStore('store', {
             this.setActiveNodeId(id)
         },
         updateNodePos(nodeId: string, x: number, y: number) {
-            const node = this.nodes.find(({ id }) => id === nodeId)
+            const node = this.activeNode
             if (!node) {
                 return console.warn(`no node find ${nodeId}`)
             }
@@ -82,6 +86,11 @@ export const useStore = defineStore('store', {
                 const dir = line.fromDot
 
                 if (line.toNode === nodeId) {
+                    const offset = getHandlePos(node.width, node.height, dir)
+                    Object.assign(line, {
+                        toX: x + offset.left,
+                        toY: y + offset.top
+                    })
                 }
                 if (line.fromNode === nodeId) {
                     const offset = getHandlePos(node.width, node.height, dir)
@@ -113,7 +122,7 @@ export const useStore = defineStore('store', {
             this.lines = this.lines.filter(({ id }) => id !== lineId)
         },
         updateLine(lineId: string, params: Partial<ILine> = {}) {
-            const line = this.lines.find(({ id }) => id === lineId)
+            const line = this.activeLine
             if (!line) {
                 console.warn(`no that line: ${lineId}`)
                 return
@@ -124,10 +133,10 @@ export const useStore = defineStore('store', {
             this.activeLineId = id
         },
         setMouseOnDot(dot: IDot| null) {
-            this.mouseOnDot = dot
+            this.hoverDot = dot
         },
-        setMouseOnNode(dot: INode| null) {
-            this.mouseOnNode = dot
+        setMouseOnNode(nodeId: string | undefined) {
+            this.hoverNodeId = nodeId
         }
     },
 
