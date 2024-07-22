@@ -22,8 +22,6 @@ onMounted(function () {
 <style lang="stylus" scoped>
 .container{
     height 100%
-    border: 1px solid red
     width: 200px
-    border-left 15px solid #eee
 }
 </style>

@@ -1,10 +1,11 @@
 import { nanoid } from "nanoid"
-import { defineStore } from "pinia"
+import { defineStore, Store } from "pinia"
 
 export const useStore = defineStore('store', {
     state: () => ({
         scale: 1,
         nodes: [],
+        lines: [],
         activeNodeId: ''
     }),
     getters: {

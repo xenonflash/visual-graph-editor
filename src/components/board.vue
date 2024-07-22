@@ -35,6 +35,7 @@ onMounted(function () {
     height 100%
     position relative
     overflow hidden
+    border: 15px solid #eee
 }
 .board{
     position absolute

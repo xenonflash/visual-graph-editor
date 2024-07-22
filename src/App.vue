@@ -39,7 +39,6 @@ function handleRemoveNode() {
   display flex
   align-items center
   height: 60px
-  border-bottom: 15px solid #eee
   button {
     margin: 0 10px
     padding: 0 7px
