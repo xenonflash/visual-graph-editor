@@ -1,11 +1,26 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, toRefs } from 'vue';
+import { computed, onMounted, ref, toRefs, watch } from 'vue';
 import { dragable } from '../utils/move'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
 import { nanoid } from 'nanoid';
+import { ILine } from './line.vue';
+import getHandlePos from '../utils/getHandlePos';
+
+export interface INode {
+    id: string,
+    content: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+}
+
+
+
+
 const store = useStore()
-const { activeNodeId } = storeToRefs(store)
+const { activeNodeId, nodes } = storeToRefs(store)
 
 
 const nodeEl = ref()
@@ -16,8 +31,23 @@ const { id } = toRefs(props)
 const isActive = computed(() => activeNodeId.value === id.value)
 
 onMounted(() => {
-    dragable(nodeEl.value!)
+    dragable(nodeEl.value!, false, false, updateOnMove)
 })
+
+function handlePos(dir) {
+    const node = nodes.value.find(({ id: _id }) => _id === id.value)
+    const { top, left } = getHandlePos(node.width, node.height, dir)
+    console.log(dir, top, left)
+    return {
+        top,
+        left
+    }
+}
+
+function updateOnMove(e: MouseEvent, x: number, y: number) {
+    // 更新线
+    store.updateNodePos(id.value, x, y)
+}
 
 function setActive(id: string) {
     store.setActiveNodeId(id)
@@ -30,7 +60,7 @@ function handleMousedown(e: MouseEvent, dir: string) {
     const { x: dotX, y: dotY } = el.getBoundingClientRect()
 
     // 确定鼠标相对画布的开始点
-    const tempLine = {
+    const tempLine: ILine = {
         id: nanoid(10),
         fromNode: id.value,
         toNode: '',
@@ -48,7 +78,6 @@ function handleMousedown(e: MouseEvent, dir: string) {
     // 添加一个edge
     function _onMove(e: MouseEvent) {
 
-        console.log(e.clientX, e.clientY)
         store.updateLine(tempLine.id, {
             toX: e.clientX,
             toY: e.clientY
@@ -69,10 +98,14 @@ function handleMousedown(e: MouseEvent, dir: string) {
         {{ msg }}
 
         <template v-if="isActive">
-            <div class="dot left" @mousedown="handleMousedown($event, 'l')"></div>
-            <div class="dot right" @mousedown="handleMousedown($event, 'r')"></div>
-            <div class="dot top" @mousedown="handleMousedown($event, 't')"></div>
-            <div class="dot bottom" @mousedown="handleMousedown($event, 'b')"></div>
+            <div :style="{ top: handlePos('l').top + 'px', left: handlePos('l').left + 'px' }" class="dot left"
+                @mousedown="handleMousedown($event, 'l')"></div>
+            <div :style="{ top: handlePos('r').top + 'px', left: handlePos('r').left + 'px' }" class="dot right"
+                @mousedown="handleMousedown($event, 'r')"></div>
+            <div :style="{ top: handlePos('t').top + 'px', left: handlePos('t').left + 'px' }" class="dot top"
+                @mousedown="handleMousedown($event, 't')"></div>
+            <div :style="{ top: handlePos('b').top + 'px', left: handlePos('b').left + 'px' }" class="dot bottom"
+                @mousedown="handleMousedown($event, 'b')"></div>
         </template>
         <!-- <div class="handles" v-if="isActive" @mousedown="handleMousedown($event)"></div> -->
     </div>
@@ -115,21 +148,5 @@ function handleMousedown(e: MouseEvent, dir: string) {
             &:hover{
                 transform scale(1.2)
             }
-        }
-        .top{
-            left: calc(50% - 6px)
-            top: -6px
-        }
-        .left{
-            left: -6px
-            top: calc(50% - 5px)
-        }
-        .right{
-            left: calc(100% - 4px)
-            top: calc(50% - 6px)
-        }
-        .bottom{
-            left: calc(50% - 6px)
-            top: calc(100% - 4px)
         }
 </style>
