@@ -15,7 +15,7 @@ const d = computed(function() {
 </script>
 
 <template>
-    <path :d="d" stroke="lightblue" stroke-width="2"></path>
+    <path v-if="props.toX !== -1 && props.toY !== -1" :d="d" stroke="lightblue" stroke-width="2"></path>
 </template>
 
 <style scoped>

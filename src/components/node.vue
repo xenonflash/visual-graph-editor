@@ -28,11 +28,8 @@ function handleMousedown(e: MouseEvent, dir: string) {
     if (!el) return
     // 画线
     const { x: dotX, y: dotY } = el.getBoundingClientRect()
-    const { clientX, clientY } = e
 
-    console.log(dotX, dotY, clientX, clientY)
     // 确定鼠标相对画布的开始点
-    console.log(e)
     const tempLine = {
         id: nanoid(10),
         fromNode: id.value,
@@ -41,8 +38,8 @@ function handleMousedown(e: MouseEvent, dir: string) {
         toDot: '',
         fromX: dotX + 5, // 球的半径
         fromY: dotY + 5,
-        toX: 0,
-        toY: 0,
+        toX: -1,
+        toY: -1,
         temp: true
     }
     // 添加一个临时线

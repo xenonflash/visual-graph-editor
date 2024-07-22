@@ -24,7 +24,6 @@ export const useStore = defineStore('store', {
                 content: `node ${id}`
             }
             this.nodes.push(newNode as never)
-            console.log(this.nodes)
             this.setActiveNodeId(id)
         },
         removeNode(nodeId: string) {
