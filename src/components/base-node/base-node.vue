@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRefs, watch } from 'vue';
-import { dragable } from '../utils/move'
-import { useStore } from '../store'
+import { dragable } from '../../utils/move'
+import { useStore } from '../../store'
 import { storeToRefs } from 'pinia';
 import { nanoid } from 'nanoid';
-import { IDot, ILine, INode } from '../typings';
+import { IDot, ILine, INode } from '../../typings';
 
 
 const store = useStore()

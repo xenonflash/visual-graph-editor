@@ -20,7 +20,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { dragable, zoomable } from '../utils/move';
-import BaseNode from './base-node.vue'
+import BaseNode from './base-node/base-node.vue'
 import Line from '../components/line.vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
@@ -28,13 +28,20 @@ const store = useStore()
 const { nodes, lines } = storeToRefs(store)
 
 
-const boardEl = ref(null)
+const boardEl = ref()
 
 
 onMounted(function () {
+    // 设置画板全局 变换 数据到store
+    setupBoardTransform()
     // dragable(boardEl.value!)
     // zoomable(boardEl.value!)
 })
+
+function setupBoardTransform() {
+    const { x, y, width, height } = boardEl.value!.getBoundingClientRect()
+    
+}
 
 function handleBoardClick(e) {
     // 如果当前点击的不是 线段 / node 取消点击
