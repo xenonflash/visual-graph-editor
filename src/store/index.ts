@@ -84,19 +84,17 @@ export const useStore = defineStore('store', {
             // 如果位置大小变化了。需要更新所有相关的线
             this.lines.forEach(line => {
                 const dir = line.fromDot
-
+                const dotData = node.dots.find(({dir: _dir}) => _dir === dir)!
                 if (line.toNode === nodeId) {
-                    const offset = getHandlePos(node.width, node.height, dir)
                     Object.assign(line, {
-                        toX: x + offset.left,
-                        toY: y + offset.top
+                        toX: x + dotData.left,
+                        toY: y + dotData.top
                     })
                 }
                 if (line.fromNode === nodeId) {
-                    const offset = getHandlePos(node.width, node.height, dir)
                     Object.assign(line, {
-                        fromX: x + offset.left,
-                        fromY: y + offset.top
+                        fromX: x + dotData.left,
+                        fromY: y + dotData.top
                     })
                 }
 

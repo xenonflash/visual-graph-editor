@@ -124,7 +124,7 @@ function handleNodeLeave() {
         width 100px
         min-height 100px
         border-radius: 10px
-        background #fff
+        background rgba(255,255,255,.5)
         position: absolute
         display flex
         align-items: center
@@ -134,12 +134,13 @@ function handleNodeLeave() {
         font-size 12px
         box-sizing border-box
     }
-    .is-active{
-        border-color blue
-    }
     .is-hover{
         border-color pink
     }
+    .is-active{
+        border-color blue
+    }
+    
     // .handles{
     //     position: absolute
     //     width: 100%
