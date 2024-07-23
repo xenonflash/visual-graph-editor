@@ -111,7 +111,7 @@ function handleNodeLeave() {
         @mousedown="setActive(data.id)" @mouseenter="handleNodeEnter(data.id)" @mouseleave="handleNodeLeave()">
         {{ data.content }}
         <template v-if="isActive || isHover">
-            <div v-for="dot in data.dots" :style="{ top: dot.top + 'px', left: dot.left + 'px' }" class="dot left"
+            <div v-for="dot in data.dots" :style="{ top: dot.top + 'px', left: dot.left + 'px' }" :class="`dot ${dot.dir}`"
                 @mousedown="handleMousedown($event, dot.dir)" @mouseenter="handleDotEnter(dot)"
                 @mouseleave="handleDotLeave()"></div>
         </template>

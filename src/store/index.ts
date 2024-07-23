@@ -86,6 +86,7 @@ export const useStore = defineStore('store', {
                 const dir = line.fromDot
                 const dotData = node.dots.find(({dir: _dir}) => _dir === dir)!
                 if (line.toNode === nodeId) {
+                    console.log(x, y, dotData, nodeId)
                     Object.assign(line, {
                         toX: x + dotData.left,
                         toY: y + dotData.top
