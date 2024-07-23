@@ -73,6 +73,7 @@ function handleMousedown(e: MouseEvent, dir: string) {
         const toDot = hoverDot?.value
         const toNode = hoverNode.value
         if (toDot) {
+            console.log(toDot)
             store.updateLine(tempLine.id, {
                 toDot: toDot.dir,
                 toX: toNode.x + toDot.left,
