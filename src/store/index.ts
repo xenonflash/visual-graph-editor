@@ -87,7 +87,6 @@ export const useStore = defineStore('store', {
                 if (line.toNode === nodeId) {
                     const dir = line.toDot
                     const dotData = node.dots.find(({ dir: _dir }) => _dir === dir)!
-                    console.log('to node', x, y, dotData, nodeId)
                     Object.assign(line, {
                         toX: x + dotData.left,
                         toY: y + dotData.top
@@ -110,7 +109,7 @@ export const useStore = defineStore('store', {
             }
             this.nodes = this.nodes.filter(({ id }) => id !== nodeId)
         },
-        setActiveNodeId(id: string) {
+        setActiveNodeId(id: string = '') {
             this.activeNodeId = id
         },
         addLine(newLine: any) {
@@ -131,7 +130,7 @@ export const useStore = defineStore('store', {
             }
             Object.assign(line, params)
         },
-        setActiveLineId(id: string) {
+        setActiveLineId(id: string = '') {
             this.activeLineId = id
         },
         setMouseOnDot(dot: IDot | null) {

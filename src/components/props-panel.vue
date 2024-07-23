@@ -6,7 +6,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { dragable, zoomable } from '../utils/move';
-import Node from '../components/node.vue'
+import Node from './base-node.vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
 const { nodes } = storeToRefs(useStore())

@@ -108,7 +108,7 @@ function handleNodeLeave() {
 </script>
 
 <template>
-    <div class="node-container" ref="nodeEl" :class="{ 'is-active': isActive, 'is-hover': isHover }"
+    <div data-role="base-node" class="node-container" ref="nodeEl" :class="{ 'is-active': isActive, 'is-hover': isHover }"
         @mousedown="setActive(data.id)" @mouseenter="handleNodeEnter(data.id)" @mouseleave="handleNodeLeave()">
         {{ data.content }}
         <template v-if="isActive || isHover">

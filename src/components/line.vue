@@ -22,6 +22,7 @@ function setActiveLine() {
 
 <template>
     <path
+        data-role="line"
         v-if="props.toX !== -1 && props.toY !== -1"
         :d="d"
         stroke="lightblue"

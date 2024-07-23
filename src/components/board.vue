@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-        <div class="board" ref="boardEl">
-            <Node v-for="item in nodes" :data="item" />
+        <div class="board" ref="boardEl" @click="handleBoardClick">
+            <base-node v-for="item in nodes" :data="item" />
 
             <!-- 辅助线 -->
             <!-- 连接线 -->
@@ -13,7 +13,6 @@
                 </defs>
                 <Line v-for="line in lines" :fromX="line.fromX" :fromY="line.fromY" :toX="line.toX" :toY="line.toY" />
             </svg>
-
         </div>
     </div>
 </template>
@@ -21,18 +20,29 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { dragable, zoomable } from '../utils/move';
-import Node from '../components/node.vue'
+import BaseNode from './base-node.vue'
 import Line from '../components/line.vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
-const { nodes, lines } = storeToRefs(useStore())
+const store = useStore()
+const { nodes, lines } = storeToRefs(store)
+
 
 const boardEl = ref(null)
+
 
 onMounted(function () {
     // dragable(boardEl.value!)
     // zoomable(boardEl.value!)
 })
+
+function handleBoardClick(e) {
+    // 如果当前点击的不是 线段 / node 取消点击
+    if(!(['base-node', 'line'].includes(e.target.dataset?.role))) {
+        // 取消当前选中node
+        store.setActiveNodeId()
+    }
+}
 </script>
 
 <style lang="stylus" scoped>
