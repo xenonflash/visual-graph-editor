@@ -199,9 +199,14 @@ function handleNodeLeave() {
             cursor pointer
             background lightblue
             border-radius: 50%
-            transition: all 100ms linear
-            &:hover{
-                transform scale(1.2)
+            transition: all 0.2s ease
+            &:hover {
+                transform: scale(1.3)
+                background: #3498db
+            }
+            &:active {
+                transform: scale(1.5)
+                background: #2980b9
             }
         }
     .edit-input {
