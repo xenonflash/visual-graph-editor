@@ -105,6 +105,9 @@ export const useStore = defineStore('store', {
             if (nodeId === this.activeNodeId) {
                 this.activeNodeId = ''
             }
+            // 删除与该节点相关的所有连接线
+            this.lines = this.lines.filter(line => line.fromNode !== nodeId && line.toNode !== nodeId)
+            // 删除节点
             this.nodes = this.nodes.filter(({ id }) => id !== nodeId)
         },
         setActiveNodeId(id: string = '') {
