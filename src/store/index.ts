@@ -75,7 +75,7 @@ export const useStore = defineStore('store', {
             this.setActiveNodeId(id)
         },
         updateNodePos(nodeId: string, x: number, y: number) {
-            const node = this.activeNode
+            const node = this.nodes.find(n => n.id === nodeId)
             if (!node) {
                 return console.warn(`no node find ${nodeId}`)
             }
@@ -83,7 +83,6 @@ export const useStore = defineStore('store', {
             Object.assign(node, { x, y })
             // 如果位置大小变化了。需要更新所有相关的线
             this.lines.forEach(line => {
-
                 if (line.toNode === nodeId) {
                     const dir = line.toDot
                     const dotData = node.dots.find(({ dir: _dir }) => _dir === dir)!
@@ -100,7 +99,6 @@ export const useStore = defineStore('store', {
                         fromY: y + dotData.top
                     })
                 }
-
             })
         },
         removeNode(nodeId: string) {

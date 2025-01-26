@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useStore } from '../store'
+import { storeToRefs } from 'pinia'
+
+const store = useStore()
+const { activeLineId } = storeToRefs(store)
 
 const props = defineProps<{ 
+    id: string,
     fromX: number, 
     fromY: number, 
     toX: number, 
@@ -69,8 +75,10 @@ const d = computed(function() {
     return `M${x} ${y} C${c1x} ${c1y}, ${c2x} ${c2y}, ${toX} ${toY}`
 })
 
+const isActive = computed(() => activeLineId.value === props.id)
+
 function setActiveLine() {
-    
+    store.setActiveLineId(props.id)
 }
 
 </script>
@@ -80,8 +88,8 @@ function setActiveLine() {
         data-role="line"
         v-if="props.toX !== -1 && props.toY !== -1"
         :d="d"
-        stroke="lightblue"
-        stroke-width="2"
+        :stroke="isActive ? '#1890ff' : 'lightblue'"
+        :stroke-width="isActive ? '3' : '2'"
         fill="none"
         marker-end='url(#head)'
         @click="setActiveLine"
@@ -90,11 +98,11 @@ function setActiveLine() {
 
 <style scoped lang="stylus">
 path{
-    transition: stroke-width 50ms linear
+    transition: stroke-width 50ms linear, stroke 50ms linear
 }
 path:hover{
-    stroke: green
-    cursor pointer
-    stroke-width: 4px
+    stroke: #1890ff
+    cursor: pointer
+    stroke-width: 3px
 }
 </style>

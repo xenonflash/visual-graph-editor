@@ -12,6 +12,8 @@
                     </marker>
                 </defs>
                 <Line v-for="line in lines" 
+                    :key="line.id"
+                    :id="line.id"
                     :fromX="line.fromX" 
                     :fromY="line.fromY" 
                     :toX="line.toX" 
@@ -54,6 +56,8 @@ function handleBoardClick(e) {
     if(!(['base-node', 'line'].includes(e.target.dataset?.role))) {
         // 取消当前选中node
         store.setActiveNodeId()
+        // 取消当前选中line
+        store.setActiveLineId()
     }
 }
 </script>
