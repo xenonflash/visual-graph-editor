@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, toRefs, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, toRefs, watch, nextTick } from 'vue';
 import { dragable } from '../../utils/move'
 import { useStore } from '../../store'
 import { storeToRefs } from 'pinia';
@@ -23,8 +23,40 @@ const isHover = computed(() => {
     return hoverNodeId?.value === data.value.id
 })
 
+const isEditing = ref(false)
+const editContent = ref('')
+
+function handleDoubleClick() {
+    isEditing.value = true
+    editContent.value = data.value.content
+    nextTick(() => {
+        const input = nodeEl.value.querySelector('input')
+        if (input) {
+            input.focus()
+        }
+    })
+}
+
+function saveContent() {
+    if (isEditing.value) {
+        store.updateNodeContent(data.value.id, editContent.value)
+        isEditing.value = false
+    }
+}
+
+function handleGlobalClick(e: MouseEvent) {
+    if (!nodeEl.value?.contains(e.target)) {
+        saveContent()
+    }
+}
+
 onMounted(() => {
     dragable(nodeEl.value!, false, false, updateOnMove)
+    document.addEventListener('click', handleGlobalClick)
+})
+
+onUnmounted(() => {
+    document.removeEventListener('click', handleGlobalClick)
 })
 
 function updateOnMove(e: MouseEvent, x: number, y: number) {
@@ -110,14 +142,19 @@ function handleNodeLeave() {
 
 <template>
     <div data-role="base-node" class="node-container" ref="nodeEl" :class="{ 'is-active': isActive, 'is-hover': isHover }"
-        @mousedown="setActive(data.id)" @mouseenter="handleNodeEnter(data.id)" @mouseleave="handleNodeLeave()">
-        {{ data.content }}
+        @mousedown="setActive(data.id)" @mouseenter="handleNodeEnter(data.id)" @mouseleave="handleNodeLeave()"
+        @dblclick="handleDoubleClick">
+        <template v-if="isEditing">
+            <input v-model="editContent" @keyup.enter="saveContent" class="edit-input" />
+        </template>
+        <template v-else>
+            {{ data.content }}
+        </template>
         <template v-if="isActive || isHover">
             <div v-for="dot in data.dots" :style="{ top: dot.top + 'px', left: dot.left + 'px' }" :class="`dot ${dot.dir}`"
                 @mousedown="handleMousedown($event, dot.dir)" @mouseenter="handleDotEnter(dot)"
                 @mouseleave="handleDotLeave()"></div>
         </template>
-        <!-- <div class="handles" v-if="isActive" @mousedown="handleMousedown($event)"></div> -->
     </div>
 </template>
 
@@ -126,7 +163,7 @@ function handleNodeLeave() {
         width 100px
         min-height 100px
         border-radius: 10px
-        background rgba(255,255,255,.5)
+        background rgba(255,255,255,.9)
         position: absolute
         display flex
         align-items: center
@@ -135,6 +172,10 @@ function handleNodeLeave() {
         padding: 10px
         font-size 12px
         box-sizing border-box
+        color: #333
+        font-weight: 500
+        user-select: none 
+        cursor: move
     }
     .is-hover{
         border-color pink
@@ -163,4 +204,16 @@ function handleNodeLeave() {
                 transform scale(1.2)
             }
         }
+    .edit-input {
+        width: 90%
+        border: none
+        outline: none
+        text-align: center
+        background: transparent
+        font-size: 12px
+        font-weight: 500
+        color: #333
+        user-select: text 
+        cursor: text
+    }
 </style>

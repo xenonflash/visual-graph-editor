@@ -45,11 +45,15 @@ export const useStore = defineStore('store', {
         addNode() {
             this.saveToHistory()
             const id = nanoid(10)
+            // 计算新节点的位置，基于已有节点数量进行偏移
+            const offset = this.nodes.length * 20
+            const baseX = 100
+            const baseY = 100
             const newNode: INode = {
                 id,
                 content: `node ${id}`,
-                x: ~~Math.random() * 200 + 100,
-                y: ~~Math.random() * 200 + 100,
+                x: baseX + offset,
+                y: baseY + offset,
                 width: 100,
                 height: 100,
                 status: NodeStatus.normal,
@@ -195,6 +199,14 @@ export const useStore = defineStore('store', {
             // 清除选中状态
             this.activeNodeId = ''
             this.activeLineId = ''
+        },
+        updateNodeContent(nodeId: string, content: string) {
+            this.saveToHistory()
+            const node = this.nodes.find(n => n.id === nodeId)
+            if (!node) {
+                return console.warn(`no node find ${nodeId}`)
+            }
+            node.content = content
         },
     },
 
