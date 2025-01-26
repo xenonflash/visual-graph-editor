@@ -48,7 +48,7 @@ function handleMousedown(e: MouseEvent, dir: string) {
         fromNode: data.value.id,
         toNode: '',
         fromDot: dir,
-        toDot: '',
+        toDot: 'l', // 设置一个默认值
         fromX: dotX + 5 - 200, // 球的半径
         fromY: dotY + 5,
         toX: -1,
@@ -62,7 +62,8 @@ function handleMousedown(e: MouseEvent, dir: string) {
     function _onMove(e: MouseEvent) {
         store.updateLine(tempLine.id, {
             toX: e.clientX - 200,
-            toY: e.clientY
+            toY: e.clientY,
+            toDot: hoverDot?.value?.dir || 'l' // 如果鼠标悬停在某个连接点上，使用其方向，否则使用默认值
         })
     }
     // 跟随鼠标位置，更新C曲线指令

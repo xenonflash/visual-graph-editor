@@ -11,7 +11,13 @@
                         <path d='M0,0 V4 L2,2 Z' fill="lightblue" />
                     </marker>
                 </defs>
-                <Line v-for="line in lines" :fromX="line.fromX" :fromY="line.fromY" :toX="line.toX" :toY="line.toY" />
+                <Line v-for="line in lines" 
+                    :fromX="line.fromX" 
+                    :fromY="line.fromY" 
+                    :toX="line.toX" 
+                    :toY="line.toY"
+                    :fromDot="line.fromDot"
+                    :toDot="line.toDot" />
             </svg>
         </div>
     </div>
