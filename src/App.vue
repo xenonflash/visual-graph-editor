@@ -5,8 +5,8 @@ import PropsPanel from './components/props-panel.vue'
 import LeftPanel from './components/left-panel.vue'
 import { useStore } from './store'
 const store = useStore()
-const { addNode, removeNode } = store
-const { activeNodeId } = storeToRefs(store)
+const { addNode, removeNode, undo, redo } = store
+const { activeNodeId, history } = storeToRefs(store)
 
 function handleAddNode() {
   console.log('add')
@@ -22,6 +22,9 @@ function handleRemoveNode() {
   <div class="navbar">
     <button @click="handleAddNode">添加</button>
     <button :disabled="activeNodeId.length < 1" @click="handleRemoveNode">删除</button>
+    <div class="divider"></div>
+    <button :disabled="history.past.length < 1" @click="undo">撤销</button>
+    <button :disabled="history.future.length < 1" @click="redo">重做</button>
   </div>
   <section>
     <!-- 左侧 -->
@@ -45,6 +48,16 @@ function handleRemoveNode() {
   button {
     margin: 0 10px
     padding: 0 7px
+    &:disabled {
+      opacity: 0.5
+      cursor: not-allowed
+    }
+  }
+  .divider {
+    width: 1px
+    height: 20px
+    background: #ccc
+    margin: 0 10px
   }
 }
 section{

@@ -12,7 +12,11 @@ type StoreData = {
     activeNodeId: string,
     activeLineId: string,
     hoverDot: IDot | null
-    hoverNodeId: string | undefined
+    hoverNodeId: string | undefined,
+    history: {
+        past: Array<{nodes: INode[], lines: ILine[]}>,
+        future: Array<{nodes: INode[], lines: ILine[]}>
+    }
 }
 
 export const useStore = defineStore('store', {
@@ -23,7 +27,11 @@ export const useStore = defineStore('store', {
         activeNodeId: '',
         activeLineId: '',
         hoverNodeId: '',
-        hoverDot: null
+        hoverDot: null,
+        history: {
+            past: [],
+            future: []
+        }
     }),
     getters: {
         activeNode: (state) => state.nodes.find(({ id }) => id === state.activeNodeId),
@@ -35,6 +43,7 @@ export const useStore = defineStore('store', {
             this.scale = val
         },
         addNode() {
+            this.saveToHistory()
             const id = nanoid(10)
             const newNode: INode = {
                 id,
@@ -102,6 +111,7 @@ export const useStore = defineStore('store', {
             })
         },
         removeNode(nodeId: string) {
+            this.saveToHistory()
             if (nodeId === this.activeNodeId) {
                 this.activeNodeId = ''
             }
@@ -114,10 +124,12 @@ export const useStore = defineStore('store', {
             this.activeNodeId = id
         },
         addLine(newLine: any) {
+            this.saveToHistory()
             this.lines.push(newLine as never)
             this.setActiveLineId(newLine!.id)
         },
         removeLine(lineId: string) {
+            this.saveToHistory()
             if (lineId === this.activeLineId) {
                 this.activeLineId = ''
             }
@@ -139,7 +151,51 @@ export const useStore = defineStore('store', {
         },
         setMouseOnNode(nodeId: string | undefined) {
             this.hoverNodeId = nodeId
-        }
+        },
+        saveToHistory() {
+            this.history.past.push({
+                nodes: JSON.parse(JSON.stringify(this.nodes)),
+                lines: JSON.parse(JSON.stringify(this.lines))
+            })
+            // 清空future，因为新的操作会改变历史
+            this.history.future = []
+        },
+        undo() {
+            if (this.history.past.length === 0) return
+            
+            // 保存当前状态到future
+            this.history.future.push({
+                nodes: JSON.parse(JSON.stringify(this.nodes)),
+                lines: JSON.parse(JSON.stringify(this.lines))
+            })
+            
+            // 恢复上一个状态
+            const previousState = this.history.past.pop()!
+            this.nodes = previousState.nodes
+            this.lines = previousState.lines
+            
+            // 清除选中状态
+            this.activeNodeId = ''
+            this.activeLineId = ''
+        },
+        redo() {
+            if (this.history.future.length === 0) return
+            
+            // 保存当前状态到past
+            this.history.past.push({
+                nodes: JSON.parse(JSON.stringify(this.nodes)),
+                lines: JSON.parse(JSON.stringify(this.lines))
+            })
+            
+            // 恢复下一个状态
+            const nextState = this.history.future.pop()!
+            this.nodes = nextState.nodes
+            this.lines = nextState.lines
+            
+            // 清除选中状态
+            this.activeNodeId = ''
+            this.activeLineId = ''
+        },
     },
 
 })
