@@ -27,27 +27,56 @@
         </div>
         <div class="divider"></div>
         <div class="zoom-controls">
-            <button class="toolbar-btn">
+            <button class="toolbar-btn" @click="handleZoom('out')" :disabled="scale <= 0.1">
                 <div class="icon zoom-out"></div>
             </button>
-            <span class="zoom-value">100%</span>
-            <button class="toolbar-btn">
+            <div class="zoom-value" @click="handleResetZoom">{{ Math.round(scale * 100) }}%</div>
+            <button class="toolbar-btn" @click="handleZoom('in')" :disabled="scale >= 3">
                 <div class="icon zoom-in"></div>
             </button>
         </div>
     </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
+import { getCurrentTransform, setTransform } from '../utils/move'
+import { computed } from 'vue'
 
 const store = useStore()
 const { activeNodeId, history } = storeToRefs(store)
+const scale = computed(() => getCurrentTransform().scale)
 
 function handleRemoveNode() {
     if (activeNodeId.value) {
         store.removeNode(activeNodeId.value)
+    }
+}
+
+function handleZoom(type: 'in' | 'out') {
+    const currentTransform = getCurrentTransform()
+    const boardEl = document.querySelector('.board') as HTMLElement
+    
+    if (boardEl) {
+        const delta = type === 'in' ? 0.1 : -0.1
+        const newScale = Math.min(3, Math.max(0.1, currentTransform.scale + delta))
+        
+        setTransform({
+            ...currentTransform,
+            scale: newScale
+        }, boardEl)
+    }
+}
+
+function handleResetZoom() {
+    const boardEl = document.querySelector('.board') as HTMLElement
+    if (boardEl) {
+        setTransform({
+            x: 0,
+            y: 0,
+            scale: 1
+        }, boardEl)
     }
 }
 </script>
@@ -236,5 +265,6 @@ function handleRemoveNode() {
     padding: 0 4px
     min-width: 48px
     text-align: center
+    cursor: pointer
 }
 </style>

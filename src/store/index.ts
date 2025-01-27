@@ -6,6 +6,11 @@ import getHandlePos from "../utils/getHandlePos"
 import { NodeStatus } from "../typings/index"
 
 type StoreData = {
+    transform: {
+        x: number
+        y: number
+        scale: number
+    }
     scale: number,
     nodes: INode[],
     lines: ILine[],
@@ -21,6 +26,11 @@ type StoreData = {
 
 export const useStore = defineStore('store', {
     state: (): StoreData => ({
+        transform: {
+            x: 0,
+            y: 0,
+            scale: 1
+        },
         scale: 1,
         nodes: [],
         lines: [],
@@ -39,6 +49,12 @@ export const useStore = defineStore('store', {
         hoverNode: (state) => state.nodes.find(({ id }) => id === state.hoverNodeId),
     },
     actions: {
+        updateTransform(transform: Partial<StoreData['transform']>) {
+            this.transform = {
+                ...this.transform,
+                ...transform
+            }
+        },
         setScale(val: number) {
             this.scale = val
         },
@@ -57,6 +73,7 @@ export const useStore = defineStore('store', {
                 x: baseX + offset,
                 y: baseY + offset,
                 status: NodeStatus.normal,
+                type: type // 添加type属性
             }
 
             let nodeConfig: INode
@@ -68,7 +85,6 @@ export const useStore = defineStore('store', {
                     ...commonProps,
                     width: size,
                     height: size,
-                    type: 'diamond',
                     dots: [
                         {
                             dir: 'l',
@@ -97,38 +113,40 @@ export const useStore = defineStore('store', {
                     ]
                 }
             } else {
-                const size = 100; // 节点大小
-                const dotSize = 10; // 连接点大小（包括边框）
-                const offset = dotSize / 2; // 居中偏移量
+                // 默认节点配置
+                const width = 120;
+                const height = 60;
+                const dotSize = 10;
+                const offset = dotSize / 2;
+                
                 nodeConfig = {
                     ...commonProps,
-                    width: size,
-                    height: size,
-                    type: 'default',
+                    width,
+                    height,
                     dots: [
                         {
                             dir: 'l',
                             radius: dotSize/2,
                             left: -offset,
-                            top: size/2 - offset
+                            top: (height/2) - offset
                         },
                         {
                             dir: 'r',
                             radius: dotSize/2,
-                            left: size - offset,
-                            top: size/2 - offset
+                            left: width - offset,
+                            top: (height/2) - offset
                         },
                         {
                             dir: 't',
                             radius: dotSize/2,
-                            left: size/2 - offset,
+                            left: (width/2) - offset,
                             top: -offset
                         },
                         {
                             dir: 'b',
                             radius: dotSize/2,
-                            left: size/2 - offset,
-                            top: size - offset
+                            left: (width/2) - offset,
+                            top: height - offset
                         }
                     ]
                 }

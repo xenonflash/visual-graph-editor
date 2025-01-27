@@ -1,16 +1,16 @@
 <template>
-    <base-node :data="data" class="diamond-node">
+    <base-node :node="node" :isActive="isActive">
         <template #shape>
-            <svg class="diamond-shape" :width="data.width" :height="data.height">
+            <svg class="diamond-shape" :width="node.width" :height="node.height">
                 <polygon 
-                    :points="`${data.width/2},0 ${data.width},${data.height/2} ${data.width/2},${data.height} 0,${data.height/2}`"
+                    :points="`${node.width/2},0 ${node.width},${node.height/2} ${node.width/2},${node.height} 0,${node.height/2}`"
                     class="diamond-polygon"
                 />
             </svg>
         </template>
         <template #default>
             <div class="diamond-content">
-                <slot>{{ data.content }}</slot>
+                {{ node.content }}
             </div>
         </template>
     </base-node>
@@ -21,7 +21,8 @@ import BaseNode from '../base-node/base-node.vue'
 import { INode } from '../../typings'
 
 defineProps<{
-    data: INode
+    node: INode
+    isActive: boolean
 }>()
 </script>
 
@@ -61,28 +62,20 @@ defineProps<{
     position: absolute
     top: 0
     left: 0
-    width: 100%
-    height: 100%
     pointer-events: none
 }
 
 .diamond-polygon {
-    fill: white
-    stroke: #ddd
-    stroke-width: 2px
-    transition: stroke .2s
+    fill: none
+    stroke: currentColor
+    stroke-width: 1.5
 }
 
 .diamond-content {
-    position: absolute
-    top: 50%
-    left: 50%
-    transform: translate(-50%, -50%)
+    position: relative
     z-index: 1
-    width: 70%
+    padding: 8px
     text-align: center
-    font-size: 12px
-    color: #333
     pointer-events: none
 }
 </style>
