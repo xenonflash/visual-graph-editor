@@ -15,7 +15,7 @@
             <!-- 节点 -->
             <template v-for="node in nodes" :key="node.id">
                 <component 
-                    :is="node.type === 'diamond' ? DiamondNode : BaseNode"
+                    :is="getNodeComponent(node.type)"
                     :node="node"
                     :isActive="node.id === activeNodeId"
                     @select="handleNodeSelect"
@@ -54,6 +54,8 @@ import { onMounted, ref, computed } from 'vue'
 import { dragable, zoomable, getCurrentTransform } from '../utils/move'
 import BaseNode from './base-node/base-node.vue'
 import DiamondNode from './nodes/diamond-node.vue'
+import CircleNode from './nodes/circle-node.vue'
+import RectNode from './nodes/rect-node.vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
 import { ILine } from '../typings'
@@ -83,6 +85,20 @@ function handleZoom() {
     zoomTimer = window.setTimeout(() => {
         isZooming.value = false
     }, 1500)
+}
+
+// 根据节点类型返回对应的组件
+const getNodeComponent = (type: string) => {
+    switch(type) {
+        case 'diamond':
+            return DiamondNode
+        case 'circle':
+            return CircleNode
+        case 'rect':
+            return RectNode
+        default:
+            return RectNode
+    }
 }
 
 // 生成连线路径

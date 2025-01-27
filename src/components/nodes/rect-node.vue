@@ -1,17 +1,21 @@
 <template>
-    <base-node :node="node" :isActive="isActive" class="diamond-node">
+    <base-node :node="node" :isActive="isActive" class="rect-node">
         <template #shape>
-            <div class="diamond-wrapper">
-                <svg class="diamond-shape" :width="node.width" :height="node.height">
-                    <polygon 
-                        :points="`${node.width/2},0 ${node.width},${node.height/2} ${node.width/2},${node.height} 0,${node.height/2}`"
-                        class="diamond-polygon"
+            <div class="rect-wrapper">
+                <svg class="rect-shape" :width="node.width" :height="node.height">
+                    <rect 
+                        x="1"
+                        y="1"
+                        :width="node.width - 2"
+                        :height="node.height - 2"
+                        class="rect-path"
+                        rx="4"
                     />
                 </svg>
             </div>
         </template>
         <template #default>
-            <div class="diamond-content">
+            <div class="rect-content">
                 {{ node.content }}
             </div>
         </template>
@@ -29,7 +33,7 @@ defineProps<{
 </script>
 
 <style lang="stylus" scoped>
-.diamond-node {
+.rect-node {
     :deep(.node-container) {
         background: transparent !important
         border: none !important
@@ -68,7 +72,7 @@ defineProps<{
     }
 }
 
-.diamond-wrapper {
+.rect-wrapper {
     position: absolute
     top: 0
     left: 0
@@ -76,7 +80,7 @@ defineProps<{
     height: 100%
 }
 
-.diamond-shape {
+.rect-shape {
     position: absolute
     top: 0
     left: 0
@@ -84,14 +88,14 @@ defineProps<{
     z-index: 1
 }
 
-.diamond-polygon {
+.rect-path {
     fill: transparent
     stroke: #8c8c8c
     stroke-width: 1.5
-    transition: borer-color 0.2s
+    transition: border-color 0.2s
 }
 
-.diamond-content {
+.rect-content {
     position: relative
     z-index: 2
     padding: 8px
@@ -101,13 +105,13 @@ defineProps<{
 }
 
 :deep(.is-active) {
-    .diamond-polygon {
+    .rect-path {
         stroke: #1890ff !important
     }
 }
 
 :deep(.is-hover) {
-    .diamond-polygon {
+    .rect-path {
         stroke: #1890ff !important
     }
 }

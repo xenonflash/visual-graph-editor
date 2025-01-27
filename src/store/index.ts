@@ -58,7 +58,7 @@ export const useStore = defineStore('store', {
         setScale(val: number) {
             this.scale = val
         },
-        addNode(type: 'default' | 'diamond' = 'default') {
+        addNode(type: string = 'rect') {
             this.saveToHistory()
             const id = nanoid(10)
             // 计算新节点的位置，基于已有节点数量进行偏移
@@ -69,7 +69,7 @@ export const useStore = defineStore('store', {
             // 根据类型设置不同的属性
             const commonProps = {
                 id,
-                content: `node ${id}`,
+                content: type === 'rect' ? '矩形节点' : type === 'diamond' ? '菱形节点' : '圆形节点',
                 x: baseX + offset,
                 y: baseY + offset,
                 status: NodeStatus.normal,
@@ -109,6 +109,41 @@ export const useStore = defineStore('store', {
                             radius: dotSize/2,
                             left: (size/2) - offset,
                             top: size - offset
+                        }
+                    ]
+                }
+            } else if (type === 'circle') {
+                const size = 80; // 节点大小
+                const dotSize = 10; // 连接点大小（包括边框）
+                const offset = dotSize / 2; // 居中偏移量
+                nodeConfig = {
+                    ...commonProps,
+                    width: size,
+                    height: size,
+                    dots: [
+                        {
+                            dir: 't',
+                            radius: dotSize/2,
+                            left: (size/2) - offset,
+                            top: -offset
+                        },
+                        {
+                            dir: 'r',
+                            radius: dotSize/2,
+                            left: size - offset,
+                            top: (size/2) - offset
+                        },
+                        {
+                            dir: 'b',
+                            radius: dotSize/2,
+                            left: (size/2) - offset,
+                            top: size - offset
+                        },
+                        {
+                            dir: 'l',
+                            radius: dotSize/2,
+                            left: -offset,
+                            top: (size/2) - offset
                         }
                     ]
                 }
@@ -155,30 +190,68 @@ export const useStore = defineStore('store', {
             this.nodes.push(nodeConfig as never)
             this.setActiveNodeId(id)
         },
-        updateNodePos(nodeId: string, x: number, y: number) {
-            const node = this.nodes.find(n => n.id === nodeId)
-            if (!node) {
-                return console.warn(`no node find ${nodeId}`)
+        updateNodePos(id: string, x: number, y: number) {
+            const node = this.nodes.find(n => n.id === id)
+            if (node) {
+                node.x = x
+                node.y = y
+                // 更新连接到该节点的所有连线
+                this.updateNodeLines(node)
             }
-
-            Object.assign(node, { x, y })
-            // 如果位置大小变化了。需要更新所有相关的线
+        },
+        updateNodeSize(id: string, width: number, height: number) {
+            const node = this.nodes.find(n => n.id === id)
+            if (!node) return
+            
+            // 保存历史记录
+            this.saveToHistory()
+            
+            // 更新节点大小
+            node.width = width
+            node.height = height
+            
+            // 更新连接点位置
+            if (node.dots) {
+                const dotSize = 12 // 连接点大小
+                const offset = dotSize / 2 // 居中偏移量
+                
+                node.dots.forEach(dot => {
+                    switch(dot.dir) {
+                        case 't':
+                            dot.left = (width/2) - offset
+                            dot.top = -offset
+                            break
+                        case 'r':
+                            dot.left = width - offset
+                            dot.top = (height/2) - offset
+                            break
+                        case 'b':
+                            dot.left = (width/2) - offset
+                            dot.top = height - offset
+                            break
+                        case 'l':
+                            dot.left = -offset
+                            dot.top = (height/2) - offset
+                            break
+                    }
+                })
+            }
+            
+            // 更新连接到该节点的所有连线
             this.lines.forEach(line => {
-                if (line.toNode === nodeId) {
-                    const dir = line.toDot
-                    const dotData = node.dots.find(({ dir: _dir }) => _dir === dir)!
-                    Object.assign(line, {
-                        toX: x + dotData.left,
-                        toY: y + dotData.top
-                    })
+                if (line.fromNode === id) {
+                    const dot = node.dots.find(d => d.dir === line.fromDot)
+                    if (dot) {
+                        line.fromX = node.x + dot.left + 6 // 加上连接点半径
+                        line.fromY = node.y + dot.top + 6
+                    }
                 }
-                if (line.fromNode === nodeId) {
-                    const dir = line.fromDot
-                    const dotData = node.dots.find(({ dir: _dir }) => _dir === dir)!
-                    Object.assign(line, {
-                        fromX: x + dotData.left,
-                        fromY: y + dotData.top
-                    })
+                if (line.toNode === id) {
+                    const dot = node.dots.find(d => d.dir === line.toDot)
+                    if (dot) {
+                        line.toX = node.x + dot.left + 6
+                        line.toY = node.y + dot.top + 6
+                    }
                 }
             })
         },
@@ -275,6 +348,26 @@ export const useStore = defineStore('store', {
                 return console.warn(`no node find ${nodeId}`)
             }
             node.content = content
+        },
+        updateNodeLines(node: INode) {
+            this.lines.forEach(line => {
+                if (line.toNode === node.id) {
+                    const dir = line.toDot
+                    const dotData = node.dots.find(({ dir: _dir }) => _dir === dir)!
+                    Object.assign(line, {
+                        toX: node.x + dotData.left,
+                        toY: node.y + dotData.top
+                    })
+                }
+                if (line.fromNode === node.id) {
+                    const dir = line.fromDot
+                    const dotData = node.dots.find(({ dir: _dir }) => _dir === dir)!
+                    Object.assign(line, {
+                        fromX: node.x + dotData.left,
+                        fromY: node.y + dotData.top
+                    })
+                }
+            })
         },
     },
 
