@@ -4,6 +4,7 @@ import { useStore } from '../../store'
 import { storeToRefs } from 'pinia'
 import { nanoid } from 'nanoid'
 import { IDot, ILine, INode } from '../../typings'
+import ContextMenu from '../context-menu.vue'
 
 const store = useStore()
 const { activeNodeId, hoverNodeId, hoverNode, hoverDot, transform } = storeToRefs(store)
@@ -19,6 +20,41 @@ const { node } = toRefs(props)
 const isHover = computed(() => hoverNodeId.value === node.value.id)
 const isEditing = ref(false)
 const editContent = ref('')
+
+// 右键菜单相关
+const contextMenuVisible = ref(false)
+const contextMenuX = ref(0)
+const contextMenuY = ref(0)
+
+const contextMenuItems = computed(() => [
+    {
+        key: 'copy',
+        label: '复制',
+        icon: 'copy',
+        shortcut: '⌘C',
+        handler: () => {
+            // 复制节点
+            store.copyNode(props.node.id)
+        }
+    },
+    {
+        key: 'delete',
+        label: '删除',
+        icon: 'delete',
+        shortcut: '⌫',
+        handler: () => {
+            store.removeNode(props.node.id)
+        }
+    }
+])
+
+const handleContextMenu = (e: MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    contextMenuX.value = e.clientX
+    contextMenuY.value = e.clientY
+    contextMenuVisible.value = true
+}
 
 // 双击编辑节点内容
 function handleDoubleClick() {
@@ -263,6 +299,7 @@ onUnmounted(() => {
             transform: `translate(${props.node.x}px, ${props.node.y}px)`
         }"
         @mousedown.stop="handleNodeMouseDown"
+        @contextmenu.prevent="handleContextMenu"
         @mouseenter="handleNodeEnter(props.node.id)" 
         @mouseleave="handleNodeLeave()"
         @dblclick.stop="handleDoubleClick">
@@ -293,6 +330,13 @@ onUnmounted(() => {
                 @mousedown.stop="handleResizeStart($event, handle)">
             </div>
         </template>
+        <ContextMenu 
+            v-model:visible="contextMenuVisible"
+            :x="contextMenuX"
+            :y="contextMenuY"
+            :items="contextMenuItems"
+            @close="contextMenuVisible = false"
+        />
     </div>
 </template>
 

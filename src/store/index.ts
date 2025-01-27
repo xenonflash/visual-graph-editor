@@ -369,6 +369,19 @@ export const useStore = defineStore('store', {
                 }
             })
         },
+        copyNode(id: string) {
+            const node = this.nodes.find(n => n.id === id)
+            if (node) {
+                const newNode = {
+                    ...node,
+                    id: nanoid(),
+                    x: node.x + 20,
+                    y: node.y + 20
+                }
+                this.nodes.push(newNode)
+                this.activeNodeId = newNode.id
+            }
+        },
     },
 
 })
