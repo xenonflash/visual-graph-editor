@@ -1,31 +1,12 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import Board from './components/board.vue'
 import PropsPanel from './components/props-panel.vue'
 import LeftPanel from './components/left-panel.vue'
-import { useStore } from './store'
-const store = useStore()
-const { addNode, removeNode, undo, redo } = store
-const { activeNodeId, history } = storeToRefs(store)
-
-function handleAddNode() {
-  console.log('add')
-  addNode()
-}
-function handleRemoveNode() {
-  removeNode(activeNodeId.value)
-}
+import Toolbar from './components/toolbar.vue'
 </script>
 
 <template>
-  <!-- 顶部栏 -->
-  <div class="navbar">
-    <button @click="handleAddNode">添加</button>
-    <button :disabled="activeNodeId.length < 1" @click="handleRemoveNode">删除</button>
-    <div class="divider"></div>
-    <button :disabled="history.past.length < 1" @click="undo">撤销</button>
-    <button :disabled="history.future.length < 1" @click="redo">重做</button>
-  </div>
+  <Toolbar />
   <section>
     <!-- 左侧 -->
     <LeftPanel />
@@ -36,33 +17,13 @@ function handleRemoveNode() {
     <!-- 右侧 -->
     <PropsPanel />
   </section>
-
 </template>
 
 <style scoped lang="stylus">
-.navbar{
-  border-bottom 1px solid #ccc
-  display flex
-  align-items center
-  height: 60px
-  button {
-    margin: 0 10px
-    padding: 0 7px
-    &:disabled {
-      opacity: 0.5
-      cursor: not-allowed
-    }
-  }
-  .divider {
-    width: 1px
-    height: 20px
-    background: #ccc
-    margin: 0 10px
-  }
-}
-section{
-  display flex
-  height 100%
+section {
+  display: flex
+  height: 100%
   flex-shrink: 0
+  padding-top: 60px
 }
 </style>
