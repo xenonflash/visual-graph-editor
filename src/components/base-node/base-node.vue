@@ -141,84 +141,86 @@ function handleNodeLeave() {
 </script>
 
 <template>
-    <div data-role="base-node" class="node-container" ref="nodeEl" :class="{ 'is-active': isActive, 'is-hover': isHover }"
-        @mousedown="setActive(data.id)" @mouseenter="handleNodeEnter(data.id)" @mouseleave="handleNodeLeave()"
+    <div data-role="base-node" class="node-container" ref="nodeEl" 
+        :class="{ 
+            'is-active': isActive, 
+            'is-hover': isHover,
+            'has-border': !data.type || data.type === 'default'
+        }"
+        :style="{width: data.width + 'px', height: data.height + 'px'}"
+        @mousedown="setActive(data.id)" 
+        @mouseenter="handleNodeEnter(data.id)" 
+        @mouseleave="handleNodeLeave()"
         @dblclick="handleDoubleClick">
+        <!-- 自定义形状插槽 -->
+        <slot name="shape"></slot>
         <template v-if="isEditing">
             <input v-model="editContent" @keyup.enter="saveContent" class="edit-input" />
         </template>
         <template v-else>
-            {{ data.content }}
+            <slot>{{ data.content }}</slot>
         </template>
         <template v-if="isActive || isHover">
             <div v-for="dot in data.dots" :style="{ top: dot.top + 'px', left: dot.left + 'px' }" :class="`dot ${dot.dir}`"
-                @mousedown="handleMousedown($event, dot.dir)" @mouseenter="handleDotEnter(dot)"
-                @mouseleave="handleDotLeave()"></div>
+                @mousedown.stop="handleMousedown($event, dot.dir)" @mouseenter.stop="handleDotEnter(dot)"
+                @mouseleave.stop="handleDotLeave()">
+            </div>
         </template>
     </div>
 </template>
 
-<style scoped lang="stylus">
-    .node-container{
-        width 100px
-        min-height 100px
-        border-radius: 10px
-        background rgba(255,255,255,.9)
-        position: absolute
-        display flex
-        align-items: center
-        justify-content: center
-        border: 2px solid #ccc
-        padding: 10px
-        font-size 12px
-        box-sizing border-box
-        color: #333
-        font-weight: 500
-        user-select: none 
-        cursor: move
-    }
-    .is-hover{
-        border-color pink
-    }
-    .is-active{
-        border-color blue
+<style lang="stylus" scoped>
+.node-container {
+    position: absolute
+    background: transparent
+    cursor: move
+    user-select: none
+    transition: border-color .2s
+    
+    &.has-border {
+        background: #fff
+        border: 1px solid #ddd
+        border-radius: 4px
     }
     
-    // .handles{
-    //     position: absolute
-    //     width: 100%
-    //     height: 100%
-    //     border: 2px solid blue
-    //     border-radius 10px
-    //     pointer-events: none
-    // }
-        .dot{
-            position: absolute
-            width: 10px
-            height: 10px
-            cursor pointer
-            background lightblue
-            border-radius: 50%
-            transition: all 0.2s ease
-            &:hover {
-                transform: scale(1.3)
-                background: #3498db
-            }
-            &:active {
-                transform: scale(1.5)
-                background: #2980b9
-            }
+    &.is-active, &.is-hover {
+        :deep(.diamond-polygon) {
+            stroke: #1890ff
         }
-    .edit-input {
-        width: 90%
-        border: none
-        outline: none
-        text-align: center
-        background: transparent
-        font-size: 12px
-        font-weight: 500
-        color: #333
-        user-select: text 
-        cursor: text
+        &.has-border {
+            border-color: #1890ff
+        }
+        .dot {
+            opacity: 1
+        }
     }
+}
+
+.dot {
+    position: absolute
+    width: 10px
+    height: 10px
+    background: #fff
+    border: 2px solid #1890ff
+    border-radius: 50%
+    cursor: crosshair
+    z-index: 2
+    opacity: 0
+    transition: all 0.2s
+    box-sizing: border-box
+    transform-origin: center
+    
+    &:hover {
+        transform: scale(1.2)
+    }
+}
+
+.edit-input {
+    width: 100%
+    height: 100%
+    border: none
+    outline: none
+    text-align: center
+    background: transparent
+}
 </style>

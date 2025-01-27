@@ -1,7 +1,13 @@
 <template>
     <div class="container">
+        <Toolbar />
         <div class="board" ref="boardEl" @click="handleBoardClick">
-            <base-node v-for="item in nodes" :data="item" />
+            <component 
+                v-for="item in nodes" 
+                :key="item.id"
+                :is="item.type === 'diamond' ? DiamondNode : BaseNode"
+                :data="item" 
+            />
 
             <!-- 辅助线 -->
             <!-- 连接线 -->
@@ -29,7 +35,9 @@
 import { onMounted, ref } from 'vue';
 import { dragable, zoomable } from '../utils/move';
 import BaseNode from './base-node/base-node.vue'
+import DiamondNode from './nodes/diamond-node.vue'
 import Line from '../components/line.vue'
+import Toolbar from '../components/toolbar.vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia';
 const store = useStore()

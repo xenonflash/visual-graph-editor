@@ -42,49 +42,99 @@ export const useStore = defineStore('store', {
         setScale(val: number) {
             this.scale = val
         },
-        addNode() {
+        addNode(type: 'default' | 'diamond' = 'default') {
             this.saveToHistory()
             const id = nanoid(10)
             // 计算新节点的位置，基于已有节点数量进行偏移
             const offset = this.nodes.length * 20
             const baseX = 100
             const baseY = 100
-            const newNode: INode = {
+
+            // 根据类型设置不同的属性
+            const commonProps = {
                 id,
                 content: `node ${id}`,
                 x: baseX + offset,
                 y: baseY + offset,
-                width: 100,
-                height: 100,
                 status: NodeStatus.normal,
-                dots: [
-                    {
-                        dir: 'l',
-                        radius: 10,
-                        left: 0 - 6,
-                        top: 50 - 6
-                    },
-                    {
-                        dir: 'r',
-                        radius: 10,
-                        left: 100 - 8,
-                        top: 50 - 8
-                    },
-                    {
-                        dir: 't',
-                        radius: 10,
-                        left: 50 - 6,
-                        top: 0 - 6
-                    },
-                    {
-                        dir: 'b',
-                        radius: 10,
-                        left: 50 - 8,
-                        top: 100 - 8
-                    }
-                ]
             }
-            this.nodes.push(newNode as never)
+
+            let nodeConfig: INode
+            if (type === 'diamond') {
+                const size = 70; // 节点大小
+                const dotSize = 10; // 连接点大小（包括边框）
+                const offset = dotSize / 2; // 居中偏移量
+                nodeConfig = {
+                    ...commonProps,
+                    width: size,
+                    height: size,
+                    type: 'diamond',
+                    dots: [
+                        {
+                            dir: 'l',
+                            radius: dotSize/2,
+                            left: -offset,
+                            top: (size/2) - offset
+                        },
+                        {
+                            dir: 'r',
+                            radius: dotSize/2,
+                            left: size - offset,
+                            top: (size/2) - offset
+                        },
+                        {
+                            dir: 't',
+                            radius: dotSize/2,
+                            left: (size/2) - offset,
+                            top: -offset
+                        },
+                        {
+                            dir: 'b',
+                            radius: dotSize/2,
+                            left: (size/2) - offset,
+                            top: size - offset
+                        }
+                    ]
+                }
+            } else {
+                const size = 100; // 节点大小
+                const dotSize = 10; // 连接点大小（包括边框）
+                const offset = dotSize / 2; // 居中偏移量
+                nodeConfig = {
+                    ...commonProps,
+                    width: size,
+                    height: size,
+                    type: 'default',
+                    dots: [
+                        {
+                            dir: 'l',
+                            radius: dotSize/2,
+                            left: -offset,
+                            top: size/2 - offset
+                        },
+                        {
+                            dir: 'r',
+                            radius: dotSize/2,
+                            left: size - offset,
+                            top: size/2 - offset
+                        },
+                        {
+                            dir: 't',
+                            radius: dotSize/2,
+                            left: size/2 - offset,
+                            top: -offset
+                        },
+                        {
+                            dir: 'b',
+                            radius: dotSize/2,
+                            left: size/2 - offset,
+                            top: size - offset
+                        }
+                    ]
+                }
+            }
+
+            this.nodes.push(nodeConfig as never)
             this.setActiveNodeId(id)
         },
         updateNodePos(nodeId: string, x: number, y: number) {
